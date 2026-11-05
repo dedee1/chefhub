@@ -17,8 +17,40 @@ class ChefHubApp extends StatelessWidget {
   }
 }
 
-class PaginaInicial extends StatelessWidget {
+class PaginaInicial extends StatefulWidget {
   const PaginaInicial({super.key});
+
+  @override
+  State<PaginaInicial> createState() => _PaginaInicialState();
+}
+
+class _PaginaInicialState extends State<PaginaInicial> {
+  final TextEditingController _controladorPesquisa = TextEditingController();
+  String? _mensagemErro;
+  String? _termoPesquisado;
+
+  void _pesquisarReceita() {
+    final termo = _controladorPesquisa.text.trim();
+
+    if (termo.isEmpty) {
+      setState(() {
+        _mensagemErro = 'Digite o nome de uma receita para pesquisar.';
+        _termoPesquisado = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _mensagemErro = null;
+      _termoPesquisado = termo;
+    });
+  }
+
+  @override
+  void dispose() {
+    _controladorPesquisa.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +77,42 @@ class PaginaInicial extends StatelessWidget {
               const Text(
                 'Encontre receitas deliciosas para o seu dia a dia.',
               ),
+              const SizedBox(height: 30),
+              const Text(
+                'Pesquisar receita',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 15),
+              TextField(
+                controller: _controladorPesquisa,
+                textInputAction: TextInputAction.search,
+                onSubmitted: (_) => _pesquisarReceita(),
+                decoration: InputDecoration(
+                  labelText: 'Nome da receita',
+                  hintText: 'Ex.: Bolo de chocolate',
+                  prefixIcon: const Icon(Icons.search),
+                  border: const OutlineInputBorder(),
+                  errorText: _mensagemErro,
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: _pesquisarReceita,
+                icon: const Icon(Icons.search),
+                label: const Text('Pesquisar'),
+              ),
+              if (_termoPesquisado != null) ...[
+                const SizedBox(height: 15),
+                Text(
+                  'Você pesquisou por: "$_termoPesquisado"',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                const Text('Os resultados serão exibidos aqui futuramente.'),
+              ],
               const SizedBox(height: 30),
               const Text(
                 'Categorias',
